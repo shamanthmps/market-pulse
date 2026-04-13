@@ -3,12 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import { TrendingUp } from "lucide-react";
 
 // ── PIN Configuration ─────────────────────────────────────────────────────────
-// Set NEXT_PUBLIC_PIN_HASH in your environment variables (Vercel dashboard or .env.local)
-// Generate your hash in browser console:
-//   crypto.subtle.digest("SHA-256", new TextEncoder().encode("YOUR_PIN"))
-//     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")))
-// If NEXT_PUBLIC_PIN_HASH is not set, the PIN gate is disabled.
-const PIN_HASH = process.env.NEXT_PUBLIC_PIN_HASH ?? "";
+// To change the PIN:
+//   1. Run this in browser console: crypto.subtle.digest("SHA-256", new TextEncoder().encode("YOUR_NEW_PIN"))
+//      .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")))
+//   2. Replace PIN_HASH below with the output.
+// Current PIN: 1122
+const PIN_HASH =
+  "b3282a2f2a28757b3a18ab833de16a9c54518c0b0cf493e3f0a7cf09386f326a";
 const STORAGE_KEY = "mp-gate-v1";
 
 async function sha256(str: string): Promise<string> {

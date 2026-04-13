@@ -83,37 +83,37 @@ interface MonitorData {
 // ── Zone config ───────────────────────────────────────────────────────────────
 const ZONE_CONFIG = {
   BUY: {
-    bg: "bg-emerald-100",
-    text: "text-emerald-800",
-    border: "border-emerald-300",
+    bg: "bg-emerald-950/40",
+    text: "text-emerald-400",
+    border: "border-emerald-500/40",
     badge: "bg-emerald-600 text-white",
     label: "BUY ZONE",
   },
   WATCH: {
-    bg: "bg-lime-50",
-    text: "text-lime-800",
-    border: "border-lime-300",
-    badge: "bg-lime-500 text-white",
+    bg: "bg-lime-950/30",
+    text: "text-lime-400",
+    border: "border-lime-500/30",
+    badge: "bg-lime-600 text-white",
     label: "WATCH",
   },
   HOLD: {
-    bg: "bg-gray-50",
-    text: "text-gray-600",
-    border: "border-gray-200",
-    badge: "bg-gray-400 text-white",
+    bg: "bg-slate-900/40",
+    text: "text-slate-400",
+    border: "border-slate-600/30",
+    badge: "bg-slate-600 text-white",
     label: "HOLD",
   },
   CAUTION: {
-    bg: "bg-amber-50",
-    text: "text-amber-800",
-    border: "border-amber-300",
-    badge: "bg-amber-500 text-white",
+    bg: "bg-amber-950/30",
+    text: "text-amber-400",
+    border: "border-amber-500/40",
+    badge: "bg-amber-600 text-white",
     label: "CAUTION",
   },
   HEDGE: {
-    bg: "bg-red-50",
-    text: "text-red-800",
-    border: "border-red-300",
+    bg: "bg-red-950/30",
+    text: "text-red-400",
+    border: "border-red-500/40",
     badge: "bg-red-600 text-white",
     label: "SELL CALLS",
   },
@@ -148,119 +148,129 @@ function RsiGauge({
             ? "#f59e0b"
             : "#dc2626";
 
-  // SVG arc gauge - cy pushed down so top label (50) has room above it
+  // Speedometer arc: 270° sweep, gap at the BOTTOM (not the top)
+  // Start at 135° SVG (=7:30 clock), end at 45° SVG (=4:30 clock), clockwise through 12 o'clock
   const r = 46,
-    cx = 76,
-    cy = 82;
-  const startAngle = -210,
-    sweepAngle = 240;
-  function polarToXY(deg: number) {
-    const rad = (deg * Math.PI) / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-  const start = polarToXY(startAngle);
-  const active = polarToXY(startAngle + (sweepAngle * pct) / 100);
-  const large = (sweepAngle * pct) / 100 > 180 ? 1 : 0;
-  const end = polarToXY(startAngle + sweepAngle);
-  const largeAll = sweepAngle > 180 ? 1 : 0;
+    cx = 68,
+    cy = 70;
+  const startDeg = 135,
+    sweepDeg = 270;
 
-  // Label positions - placed outside the arc
-  function labelPos(pct100: number, offset: number) {
-    const deg = startAngle + (sweepAngle * pct100) / 100;
+  function polarToXY(deg: number, radius = r) {
     const rad = (deg * Math.PI) / 180;
+    return { x: cx + radius * Math.cos(rad), y: cy + radius * Math.sin(rad) };
+  }
+
+  const startPt = polarToXY(startDeg);
+  const endPt = polarToXY(startDeg + sweepDeg); // 405° = 45°
+  const activeDeg = startDeg + (sweepDeg * pct) / 100;
+  const activePt = polarToXY(activeDeg);
+  const activeIsLarge = (sweepDeg * pct) / 100 > 180 ? 1 : 0;
+
+  // Tick + label positions for a given pct (0–100)
+  function tickPts(p: number) {
+    const deg = startDeg + (sweepDeg * p) / 100;
     return {
-      x: cx + (r + offset) * Math.cos(rad),
-      y: cy + (r + offset) * Math.sin(rad),
+      inner: polarToXY(deg, r - 9),
+      outer: polarToXY(deg, r + 9),
+      label: polarToXY(deg, r + 26),
     };
   }
-  const lbl30 = labelPos(30, 18);
-  const lbl50 = labelPos(50, 18);
-  const lbl70 = labelPos(70, 18);
-  const tick30i = polarToXY(startAngle + (sweepAngle * 30) / 100);
-  const tick30o = labelPos(30, 10);
-  const tick70i = polarToXY(startAngle + (sweepAngle * 70) / 100);
-  const tick70o = labelPos(70, 10);
+  const t30 = tickPts(30);
+  const t70 = tickPts(70);
 
   return (
     <div className="flex flex-col items-center">
-      <svg width="152" height="124" viewBox="0 0 152 124">
-        {/* Track */}
+      <svg width="136" height="122" viewBox="0 0 136 122">
+        {/* Track arc — 270° clockwise, gap at bottom */}
         <path
-          d={`M ${start.x} ${start.y} A ${r} ${r} 0 ${largeAll} 1 ${end.x} ${end.y}`}
+          d={`M ${startPt.x} ${startPt.y} A ${r} ${r} 0 1 1 ${endPt.x} ${endPt.y}`}
           fill="none"
-          stroke="#e5e7eb"
+          stroke="#0f172a"
           strokeWidth="10"
           strokeLinecap="round"
         />
         {/* Active arc */}
         {pct > 0 && (
           <path
-            d={`M ${start.x} ${start.y} A ${r} ${r} 0 ${large} 1 ${active.x} ${active.y}`}
+            d={`M ${startPt.x} ${startPt.y} A ${r} ${r} 0 ${activeIsLarge} 1 ${activePt.x} ${activePt.y}`}
             fill="none"
             stroke={color}
             strokeWidth="10"
             strokeLinecap="round"
           />
         )}
-        {/* Tick at 30 */}
+
+        {/* ── 30 threshold — green, prominent ── */}
         <line
-          x1={tick30i.x}
-          y1={tick30i.y}
-          x2={tick30o.x}
-          y2={tick30o.y}
+          x1={t30.inner.x}
+          y1={t30.inner.y}
+          x2={t30.outer.x}
+          y2={t30.outer.y}
           stroke="#16a34a"
-          strokeWidth="2.5"
+          strokeWidth="3.5"
+          strokeLinecap="round"
         />
-        {/* Tick at 70 */}
-        <line
-          x1={tick70i.x}
-          y1={tick70i.y}
-          x2={tick70o.x}
-          y2={tick70o.y}
-          stroke="#f59e0b"
-          strokeWidth="2.5"
-        />
-        {/* Zone labels - outside arc, clear and readable */}
         <text
-          x={lbl30.x}
-          y={lbl30.y}
-          fontSize="13"
+          x={t30.label.x}
+          y={t30.label.y}
+          fontSize="14"
           fill="#16a34a"
-          fontWeight="800"
+          fontWeight="900"
           textAnchor="middle"
           dominantBaseline="middle"
         >
           30
         </text>
+
+        {/* ── 70 threshold — amber, prominent ── */}
+        <line
+          x1={t70.inner.x}
+          y1={t70.inner.y}
+          x2={t70.outer.x}
+          y2={t70.outer.y}
+          stroke="#f59e0b"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
         <text
-          x={lbl50.x}
-          y={lbl50.y}
-          fontSize="12"
-          fill="#9ca3af"
-          fontWeight="600"
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          50
-        </text>
-        <text
-          x={lbl70.x}
-          y={lbl70.y}
-          fontSize="13"
+          x={t70.label.x}
+          y={t70.label.y}
+          fontSize="14"
           fill="#f59e0b"
-          fontWeight="800"
+          fontWeight="900"
           textAnchor="middle"
           dominantBaseline="middle"
         >
           70
         </text>
+
+        {/* Value + label centered inside the arc */}
+        <text
+          x={cx}
+          y={cy - 6}
+          fontSize="24"
+          fontWeight="800"
+          fill={color}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="tabular-nums"
+        >
+          {value.toFixed(1)}
+        </text>
+        <text
+          x={cx}
+          y={cy + 18}
+          fontSize="9"
+          fontWeight="700"
+          fill={color}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          letterSpacing="2"
+        >
+          {label.toUpperCase()}
+        </text>
       </svg>
-      <p className="text-3xl font-bold -mt-10" style={{ color }}>
-        {value.toFixed(1)}
-      </p>
-      <p className="text-xs font-semibold mt-1" style={{ color }}>
-        {label}
-      </p>
     </div>
   );
 }
@@ -292,19 +302,21 @@ function EditHoldingsModal({
     );
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="p-5 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="font-bold text-gray-900">Edit ETF Holdings</h2>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[#1e293b] border border-white/10 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <h2 className="font-bold text-slate-200 text-sm">
+            Edit ETF Holdings
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-slate-500 hover:text-slate-300 text-xl leading-none"
           >
             &times;
           </button>
         </div>
         <div className="p-5 space-y-2">
-          <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase px-1 mb-1">
+          <div className="grid grid-cols-12 gap-2 text-[10px] font-semibold text-slate-600 uppercase tracking-widest px-1 mb-1">
             <div className="col-span-3">Symbol</div>
             <div className="col-span-3">Display Name</div>
             <div className="col-span-2">Qty</div>
@@ -319,29 +331,29 @@ function EditHoldingsModal({
                   update(idx, "symbol", e.target.value.toUpperCase())
                 }
                 placeholder="BANKBEES.NS"
-                className="col-span-3 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+                className="col-span-3 border border-white/10 rounded-lg px-2 py-1.5 text-xs bg-white/5 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
               />
               <input
                 value={row.displayName}
                 onChange={(e) => update(idx, "displayName", e.target.value)}
                 placeholder="Bank BeES"
-                className="col-span-3 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="col-span-3 border border-white/10 rounded-lg px-2 py-1.5 text-xs bg-white/5 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="number"
                 value={row.qty}
                 onChange={(e) => update(idx, "qty", Number(e.target.value))}
-                className="col-span-2 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="col-span-2 border border-white/10 rounded-lg px-2 py-1.5 text-xs bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="number"
                 value={row.avgCost}
                 onChange={(e) => update(idx, "avgCost", Number(e.target.value))}
-                className="col-span-3 border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="col-span-3 border border-white/10 rounded-lg px-2 py-1.5 text-xs bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <button
                 onClick={() => setRows((r) => r.filter((_, i) => i !== idx))}
-                className="col-span-1 text-red-400 hover:text-red-600"
+                className="col-span-1 text-slate-600 hover:text-red-400 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -354,21 +366,21 @@ function EditHoldingsModal({
                 { symbol: "", displayName: "", qty: 0, avgCost: 0 },
               ])
             }
-            className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-800 text-xs font-medium mt-2"
+            className="flex items-center gap-1.5 text-indigo-400 hover:text-indigo-300 text-xs font-medium mt-2"
           >
             <Plus className="w-3.5 h-3.5" /> Add ETF
           </button>
         </div>
-        <div className="p-5 border-t border-gray-200 flex gap-3 justify-end">
+        <div className="p-5 border-t border-white/10 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+            className="px-4 py-2 text-sm border border-white/10 rounded-lg text-slate-400 hover:bg-white/5"
           >
             Cancel
           </button>
           <button
             onClick={() => onSave(rows.filter((r) => r.symbol.trim()))}
-            className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700"
+            className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500"
           >
             Save Holdings
           </button>
@@ -479,7 +491,7 @@ function EtfMonitorInner() {
   const liqAmt = Number(liqInput) || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#111827]">
       {/* ── Demo mode banner ────────────────────────────────────────────────── */}
       {demoMode && (
         <div
@@ -498,23 +510,28 @@ function EtfMonitorInner() {
               : "DEMO: OVERBOUGHT SCENARIO — RSI 78.3 · Hedge Zone Active · Real prices, mocked RSI"}
         </div>
       )}
-      {/* ── Dark gradient header ─────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-slate-900 to-indigo-950 px-4 py-4 md:px-8 md:py-6">
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="border-b border-white/10 bg-[#1e293b]/80 backdrop-blur-sm px-4 py-4 md:px-8 md:py-5 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">
-              ETF Portfolio Monitor
-            </h1>
-            <p className="text-slate-400 text-xs md:text-sm mt-0.5 hidden md:block">
-              NIFTY 2H RSI timing · Covered call signals · LiquidCase tracker
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-900/60">
+              <TrendingUp className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h1 className="text-base md:text-lg font-bold text-white tracking-tight leading-none">
+                ETF Portfolio Monitor
+              </h1>
+              <p className="text-slate-500 text-[11px] mt-0.5 hidden md:block">
+                NIFTY 2H RSI timing · Gain-Lock Collar · LiquidCase tracker
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-2 md:gap-2.5">
             <button
               onClick={() => setEditOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 md:py-2 text-xs md:text-sm border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 md:py-2 text-xs border border-white/10 rounded-lg text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
             >
-              <Settings2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> Edit Holdings
+              <Settings2 className="w-3.5 h-3.5" /> Edit Holdings
             </button>
             <button
               onClick={() => {
@@ -522,17 +539,17 @@ function EtfMonitorInner() {
                 location.reload();
               }}
               title="Lock"
-              className="flex items-center justify-center w-8 h-8 md:w-9 md:h-9 border border-slate-700 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+              className="flex items-center justify-center w-8 h-8 border border-white/10 rounded-lg text-slate-500 hover:bg-white/5 hover:text-white transition-colors"
             >
-              <Lock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <Lock className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={fetchData}
               disabled={loading}
-              className="flex items-center gap-1.5 md:gap-2 bg-indigo-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-indigo-500 disabled:opacity-50 transition-colors shadow-lg shadow-indigo-900/40"
+              className="flex items-center gap-1.5 bg-indigo-600 text-white px-3.5 py-1.5 md:px-4 md:py-2 rounded-lg text-xs font-semibold hover:bg-indigo-500 disabled:opacity-40 transition-colors shadow-lg shadow-indigo-900/50"
             >
               <RefreshCw
-                className={`w-3.5 h-3.5 md:w-4 md:h-4 ${loading ? "animate-spin" : ""}`}
+                className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
               />
               {loading ? "Refreshing…" : "Refresh"}
             </button>
@@ -540,50 +557,50 @@ function EtfMonitorInner() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-3 md:px-8 py-4 md:py-6 space-y-4 md:space-y-5">
+      <div className="max-w-6xl mx-auto px-3 md:px-8 py-5 md:py-7 space-y-4 md:space-y-5">
         {/* placeholder-open */}
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm flex items-center gap-2">
+          <div className="bg-red-950/40 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" /> {error}
           </div>
         )}
 
         {/* ── Quick stats row ─────────────────────────────────────────────── */}
-        <div className="grid grid-cols-3 gap-2 md:gap-4">
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-2 py-3 md:px-5 md:py-4">
-            <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wide">
+        <div className="grid grid-cols-3 gap-2 md:gap-3">
+          <div className="bg-[#1e293b] border border-white/10 rounded-2xl px-3 py-3 md:px-5 md:py-4">
+            <p className="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-widest">
               Invested
             </p>
-            <p className="text-base md:text-2xl font-bold text-gray-900 mt-1 tabular-nums">
+            <p className="text-base md:text-2xl font-bold text-white mt-1.5 tabular-nums">
               ₹
               {totalInvested.toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
               })}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-2 py-3 md:px-5 md:py-4">
-            <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wide">
+          <div className="bg-[#1e293b] border border-white/10 rounded-2xl px-3 py-3 md:px-5 md:py-4">
+            <p className="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-widest">
               Current Value
             </p>
-            <p className="text-base md:text-2xl font-bold text-gray-900 mt-1 tabular-nums">
+            <p className="text-base md:text-2xl font-bold text-white mt-1.5 tabular-nums">
               ₹
               {totalCurVal.toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
               })}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-2 py-3 md:px-5 md:py-4">
-            <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wide">
-              P&L
+          <div className="bg-[#1e293b] border border-white/10 rounded-2xl px-3 py-3 md:px-5 md:py-4">
+            <p className="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-widest">
+              P&amp;L
             </p>
             <p
-              className={`text-base md:text-2xl font-bold mt-1 tabular-nums ${totalPnl >= 0 ? "text-emerald-600" : "text-red-600"}`}
+              className={`text-base md:text-2xl font-bold mt-1.5 tabular-nums ${totalPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
             >
               {totalPnl >= 0 ? "+" : ""}₹
               {Math.round(totalPnl).toLocaleString("en-IN")}
-              <span className="hidden md:inline text-sm font-normal ml-1 text-gray-500">
+              <span className="hidden md:inline text-sm font-normal ml-1.5 text-slate-500">
                 (
                 {totalInvested > 0
                   ? ((totalPnl / totalInvested) * 100).toFixed(2)
@@ -591,7 +608,7 @@ function EtfMonitorInner() {
                 %)
               </span>
             </p>
-            <p className="md:hidden text-[10px] text-gray-400 mt-0.5 tabular-nums">
+            <p className="md:hidden text-[10px] text-slate-500 mt-0.5 tabular-nums">
               {totalInvested > 0
                 ? `(${((totalPnl / totalInvested) * 100).toFixed(1)}%)`
                 : ""}
@@ -603,11 +620,20 @@ function EtfMonitorInner() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
           {/* Market Pulse */}
           <div
-            className={`rounded-2xl border-2 p-6 ${pulseZone.border} ${pulseZone.bg} flex flex-col gap-3`}
+            className={`rounded-2xl border p-5 md:p-6 flex flex-col gap-3 bg-[#1e293b] border-white/8`}
           >
-            <p className="font-bold text-gray-800 text-sm uppercase tracking-wide">
-              NIFTY Market Pulse
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="font-bold text-slate-200 text-xs uppercase tracking-widest">
+                NIFTY Market Pulse
+              </p>
+              {pulse && (
+                <span
+                  className={`text-[10px] font-black px-2.5 py-1 rounded-lg tracking-wide ${pulseZone.badge}`}
+                >
+                  {pulseZone.label}
+                </span>
+              )}
+            </div>
             {pulse ? (
               <>
                 {/* Dual RSI row */}
@@ -627,22 +653,16 @@ function EtfMonitorInner() {
                     />
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mt-1">
                   <DirectionIcon d={pulse.direction} />
-                  <span className="text-xs text-gray-500 capitalize">
+                  <span className="text-xs text-slate-500 capitalize">
                     2H {pulse.direction} from {pulse.prevRsi2h.toFixed(1)}
                   </span>
-                </div>
-                <div
-                  className={`w-full rounded-lg px-3 py-2 text-center text-xs font-semibold ${pulseZone.badge}`}
-                >
-                  {pulseZone.label}
                 </div>
                 <p className={`text-xs leading-relaxed ${pulseZone.text}`}>
                   {pulse.interpretation}
                 </p>
 
-                {/* Deploy signal - shown when 2H in BUY zone */}
                 {pulse.zone === "BUY" &&
                   (() => {
                     const ds = pulse.deploySignal;
@@ -701,21 +721,21 @@ function EtfMonitorInner() {
                   })()}
               </>
             ) : (
-              <div className="text-sm text-gray-400 py-10 text-center">
+              <div className="text-sm text-slate-500 py-10 text-center">
                 {loading ? "Loading NIFTY data…" : "Click Refresh to load"}
               </div>
             )}
           </div>
 
           {/* LiquidCase + Portfolio Summary */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-            <p className="font-bold text-gray-800 text-sm uppercase tracking-wide">
+          <div className="bg-[#1e293b] border border-white/10 rounded-2xl p-5 md:p-6 space-y-4">
+            <p className="font-bold text-slate-200 text-xs uppercase tracking-widest">
               Portfolio + LiquidCase
             </p>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">ETF Invested</span>
-                <span className="font-semibold text-gray-900">
+                <span className="text-slate-500">ETF Invested</span>
+                <span className="font-semibold text-white tabular-nums">
                   ₹
                   {totalInvested.toLocaleString("en-IN", {
                     maximumFractionDigits: 0,
@@ -723,8 +743,8 @@ function EtfMonitorInner() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Current Value</span>
-                <span className="font-semibold text-gray-900">
+                <span className="text-slate-500">Current Value</span>
+                <span className="font-semibold text-white tabular-nums">
                   ₹
                   {totalCurVal.toLocaleString("en-IN", {
                     maximumFractionDigits: 0,
@@ -732,13 +752,13 @@ function EtfMonitorInner() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Unrealised P&L</span>
+                <span className="text-slate-500">Unrealised P&amp;L</span>
                 <span
-                  className={`font-bold ${totalPnl >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                  className={`font-bold tabular-nums ${totalPnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                 >
                   {totalPnl >= 0 ? "+" : ""}₹
                   {Math.round(totalPnl).toLocaleString("en-IN")}
-                  <span className="text-xs ml-1 font-normal">
+                  <span className="text-xs ml-1 font-normal text-slate-500">
                     ({totalPnl >= 0 ? "+" : ""}
                     {totalInvested > 0
                       ? ((totalPnl / totalInvested) * 100).toFixed(2)
@@ -748,9 +768,9 @@ function EtfMonitorInner() {
                 </span>
               </div>
             </div>
-            <hr className="border-gray-100" />
+            <hr className="border-white/10" />
             <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-2">
+              <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest block mb-2">
                 LiquidCase / Deployable Cash
               </label>
               <div className="flex gap-2">
@@ -759,16 +779,16 @@ function EtfMonitorInner() {
                   value={liqInput}
                   onChange={(e) => setLiqInput(e.target.value)}
                   placeholder="0"
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                  className="flex-1 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white/5 text-white placeholder-slate-600"
                 />
                 <button
                   onClick={() => saveLiquidcase(Number(liqInput) || 0)}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-500 transition-colors"
                 >
                   Save
                 </button>
               </div>
-              <p className="text-xs text-gray-400 mt-1.5">
+              <p className="text-xs text-slate-600 mt-1.5">
                 {liqAmt > 0
                   ? `₹${liqAmt.toLocaleString("en-IN")} parked · earning ~6.5% annualised`
                   : "Enter amount parked in LiquidCase / liquid funds"}
@@ -821,22 +841,23 @@ function EtfMonitorInner() {
         </div>
 
         {/* ── Strategy Rules (collapsible) ─────────────────────────────────── */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-[#1e293b] border border-white/10 rounded-2xl overflow-hidden">
           <button
             onClick={() => setRulesOpen(!rulesOpen)}
-            className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/3 transition-colors"
           >
-            <span className="font-semibold text-gray-800 text-sm flex items-center gap-2">
-              <Info className="w-4 h-4 text-indigo-500" /> ETF Strategy Rules
+            <span className="font-semibold text-slate-300 text-xs uppercase tracking-widest flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 text-indigo-400" /> ETF Strategy
+              Rules
             </span>
             {rulesOpen ? (
-              <ChevronUp className="w-4 h-4 text-gray-400" />
+              <ChevronUp className="w-4 h-4 text-slate-600" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="w-4 h-4 text-slate-600" />
             )}
           </button>
           {rulesOpen && (
-            <div className="px-6 pb-5 border-t border-gray-50 pt-4 space-y-2.5 text-xs text-gray-700">
+            <div className="px-5 pb-5 border-t border-white/10 pt-4 space-y-2.5 text-xs text-slate-400">
               {[
                 {
                   color: "bg-emerald-500",
@@ -849,7 +870,7 @@ function EtfMonitorInner() {
                   body: "Move funds from savings into LiquidCase so they are ready. No ETF purchases yet.",
                 },
                 {
-                  color: "bg-gray-400",
+                  color: "bg-slate-500",
                   title: "HOLD zone (2H RSI 45-70):",
                   body: "No new buys. Park surplus in LiquidCase. Let existing ETFs compound. Continue monthly SIPs normally.",
                 },
@@ -861,19 +882,22 @@ function EtfMonitorInner() {
                 {
                   color: "bg-red-500",
                   title: "Hedge strategy — gain-proportional:",
-                  body: "Gain < 5%: sell 1 NIFTY call at 8% OTM (monthly) to collect premium. Gain >= 5%: full Gain-Lock Collar — buy put 4% OTM (quarterly), sell put 10% OTM (quarterly, funds the long), sell call 8% OTM (monthly, roll monthly for income). Sizing: 1 lot per Rs 8L portfolio value. Strikes rounded to nearest 100 for liquidity.",
+                  body: "Gain < 5%: sell 1 NIFTY call at 8% OTM (monthly). Gain >= 5%: full Gain-Lock Collar — buy put 4% OTM (quarterly), sell put 10% OTM (quarterly), sell call 8% OTM (monthly). 1 lot per ₹8L. Strikes nearest 100.",
                 },
               ].map(({ color, title, body }) => (
-                <div key={title} className="flex gap-2">
+                <div key={title} className="flex gap-2.5">
                   <div
-                    className={`w-2.5 h-2.5 rounded-full ${color} mt-0.5 shrink-0`}
+                    className={`w-2 h-2 rounded-full ${color} mt-1 shrink-0`}
                   />
                   <div>
-                    <span className="font-semibold">{title}</span> {body}
+                    <span className="font-semibold text-slate-300">
+                      {title}
+                    </span>{" "}
+                    {body}
                   </div>
                 </div>
               ))}
-              <p className="pt-2 border-t border-gray-100 text-gray-400 italic">
+              <p className="pt-2 border-t border-white/10 text-slate-600 italic">
                 Never sell ETF units · Deploy into most oversold ETF by
                 individual RSI · BANKBEES passive holds are separate from algo
                 trading capital
@@ -884,12 +908,16 @@ function EtfMonitorInner() {
 
         {/* ── Holdings RSI Table ───────────────────────────────────────────── */}
         {rows.length > 0 && (
-          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-            <div className="px-4 md:px-6 py-4 border-b border-gray-100">
-              <h2 className="font-bold text-gray-800">Holdings RSI Status</h2>
-              <p className="text-xs text-gray-400 mt-0.5">
-                2H timeframe RSI for each ETF · refreshed on demand
-              </p>
+          <div className="bg-[#1e293b] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="px-4 md:px-6 py-4 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-slate-200 text-sm">
+                  Holdings RSI Status
+                </h2>
+                <p className="text-[11px] text-slate-600 mt-0.5">
+                  2H timeframe RSI for each ETF · refreshed on demand
+                </p>
+              </div>
             </div>
 
             {/* ── Mobile cards ── */}
@@ -986,59 +1014,59 @@ function EtfMonitorInner() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 text-xs font-medium text-gray-400 uppercase bg-gray-50/60">
+                  <tr className="border-b border-white/10 text-[10px] font-semibold text-slate-600 uppercase tracking-widest bg-white/2">
                     <th className="px-6 py-3 text-left">ETF</th>
                     <th className="px-4 py-3 text-right">LTP</th>
                     <th className="px-4 py-3 text-right">Qty</th>
                     <th className="px-4 py-3 text-right">Avg Cost</th>
-                    <th className="px-4 py-3 text-right">P&L</th>
+                    <th className="px-4 py-3 text-right">P&amp;L</th>
                     <th className="px-4 py-3 text-center">2H RSI</th>
                     <th className="px-4 py-3 text-center">Zone</th>
                     <th className="px-6 py-3 text-left">Signal</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-white/4">
                   {rows.map((row) => {
                     const zc = ZONE_CONFIG[row.zone];
                     return (
                       <tr
                         key={row.symbol}
-                        className={`hover:bg-gray-50/70 transition-colors ${
+                        className={`hover:bg-white/3 transition-colors ${
                           row.zone === "BUY"
-                            ? "bg-emerald-50/40"
+                            ? "bg-emerald-950/30"
                             : row.zone === "HEDGE"
-                              ? "bg-red-50/30"
+                              ? "bg-red-950/30"
                               : ""
                         }`}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-semibold text-gray-900">
+                          <p className="font-semibold text-slate-200">
                             {row.holding?.displayName ?? row.symbol}
                           </p>
-                          <p className="text-xs text-gray-400">{row.symbol}</p>
+                          <p className="text-xs text-slate-600">{row.symbol}</p>
                         </td>
-                        <td className="px-4 py-4 text-right font-medium text-gray-900">
+                        <td className="px-4 py-4 text-right font-semibold text-slate-200 tabular-nums">
                           {row.currentPrice > 0
                             ? `₹${row.currentPrice.toLocaleString("en-IN")}`
                             : "-"}
                         </td>
-                        <td className="px-4 py-4 text-right text-gray-600">
+                        <td className="px-4 py-4 text-right text-slate-400 tabular-nums">
                           {row.holding?.qty?.toLocaleString("en-IN") ?? "-"}
                         </td>
-                        <td className="px-4 py-4 text-right text-gray-600">
+                        <td className="px-4 py-4 text-right text-slate-400 tabular-nums">
                           {row.holding ? `₹${row.holding.avgCost}` : "-"}
                         </td>
                         <td className="px-4 py-4 text-right">
                           {row.invested > 0 ? (
                             <div>
                               <p
-                                className={`font-semibold ${row.pnl >= 0 ? "text-emerald-600" : "text-red-600"}`}
+                                className={`font-semibold tabular-nums ${row.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
                               >
                                 {row.pnl >= 0 ? "+" : ""}₹
                                 {Math.round(row.pnl).toLocaleString("en-IN")}
                               </p>
                               <p
-                                className={`text-xs ${row.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                                className={`text-xs tabular-nums ${row.pnl >= 0 ? "text-emerald-600" : "text-red-600"}`}
                               >
                                 {row.pnl >= 0 ? "+" : ""}
                                 {row.pnlPct.toFixed(2)}%
@@ -1049,12 +1077,14 @@ function EtfMonitorInner() {
                           )}
                         </td>
                         <td className="px-4 py-4 text-center">
-                          <span className={`text-base font-bold ${zc.text}`}>
+                          <span
+                            className={`text-base font-bold tabular-nums ${zc.text}`}
+                          >
                             {row.rsi2h.toFixed(1)}
                           </span>
                           <div className="flex items-center justify-center gap-1 mt-0.5">
                             <DirectionIcon d={row.direction} />
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-slate-600">
                               prev {row.prevRsi2h.toFixed(1)}
                             </p>
                           </div>
@@ -1066,12 +1096,12 @@ function EtfMonitorInner() {
                             {zc.label}
                           </span>
                           {row.zone === "HEDGE" && (
-                            <p className="text-xs text-red-500 mt-1 font-medium">
+                            <p className="text-xs text-red-400 mt-1 font-medium">
                               5% OTM: ₹{row.coveredCallStrike}
                             </p>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-xs text-gray-500 max-w-xs">
+                        <td className="px-6 py-4 text-xs text-slate-500 max-w-xs">
                           {row.error ? (
                             <span className="text-red-400">{row.error}</span>
                           ) : (
@@ -1240,11 +1270,13 @@ function EtfMonitorInner() {
 
         {/* ── Empty state ──────────────────────────────────────────────────── */}
         {etfHoldings.length === 0 && (
-          <div className="bg-white border-2 border-dashed border-gray-200 rounded-2xl p-12 text-center">
-            <p className="text-gray-400 mb-4">No ETF holdings configured.</p>
+          <div className="bg-[#1e293b] border border-dashed border-white/10 rounded-2xl p-12 text-center">
+            <p className="text-slate-500 mb-4 text-sm">
+              No ETF holdings configured.
+            </p>
             <button
               onClick={() => setEditOpen(true)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-500"
             >
               + Add Holdings
             </button>
