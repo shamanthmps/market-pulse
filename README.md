@@ -10,7 +10,7 @@
 [![Deploy with Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/shamanthmps/market-pulse)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[**Live Demo**](https://shamanth-stock-market.vercel.app) &nbsp;·&nbsp; [How It Works](https://shamanth-stock-market.vercel.app/how-it-works.html) &nbsp;·&nbsp; [Deploy in 1 Click](#one-click-deploy)
+[**Live Demo**](https://market-pulse-shamanth.vercel.app) &nbsp;·&nbsp; [How It Works](https://market-pulse-shamanth.vercel.app/how-it-works.html) &nbsp;·&nbsp; [Deploy in 1 Click](#one-click-deploy)
 
 </div>
 
@@ -306,3 +306,5 @@ Market Pulse is something I built for myself — to stop guessing when to invest
 [![Instagram](https://img.shields.io/badge/Instagram-shamanth__skm-E4405F?logo=instagram)](https://www.instagram.com/shamanth_skm/)
 
 If this helped you, star the repo. If you build something with it, I'd love to hear about it.
+
+
