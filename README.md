@@ -12,6 +12,8 @@
 
 [**Live Demo**](https://market-pulse-shamanth.vercel.app) &nbsp;·&nbsp; [How It Works](https://market-pulse-shamanth.vercel.app/how-it-works.html) &nbsp;·&nbsp; [Deploy in 1 Click](#one-click-deploy)
 
+> **Install as an app** - On mobile (Android/iOS), open the live demo in your browser and tap "Add to Home Screen". On desktop (Chrome/Edge), click the install icon in the address bar. Works offline once installed.
+
 </div>
 
 ---
