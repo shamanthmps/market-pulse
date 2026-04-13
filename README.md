@@ -20,7 +20,7 @@
 
 Market Pulse is a self-hosted algo trading research platform built for Indian equity markets (NSE).
 
-You tell it what ETFs you hold and at what price. It watches NIFTY RSI across two timeframes and tells you exactly what to do — when to deploy more capital, when to sit on your hands, when to sell covered calls, and when to lock in profits with a hedge collar. All of that, live, every time you open the app.
+You tell it what ETFs you hold and at what price. It watches NIFTY RSI across two timeframes and tells you exactly what to do - when to deploy more capital, when to sit on your hands, when to sell covered calls, and when to lock in profits with a hedge collar. All of that, live, every time you open the app.
 
 Beyond the portfolio monitor, it lets you backtest 10 strategies on any NSE stock, paper trade with proper position sizing, and track your trading performance over time.
 
@@ -37,8 +37,8 @@ Data comes free from Yahoo Finance. Nothing is stored on any server. You own eve
 Market Pulse has **no backend, no database, no user accounts**. There is no server storing your portfolio.
 
 - Your ETF holdings live in a single JSON file on your own machine (or your own private fork)
-- Live prices are fetched directly from Yahoo Finance in your browser — no intermediary
-- If you deploy to Vercel, your holdings file deploys with your code — only you control it
+- Live prices are fetched directly from Yahoo Finance in your browser - no intermediary
+- If you deploy to Vercel, your holdings file deploys with your code - only you control it
 - Nothing is ever sent to any third-party service
 
 **The right way to use this with your real data: fork the repo, add your holdings to `data/holdings.json` in your private fork, deploy to Vercel.** Your portfolio lives in your own GitHub repo, behind your own Vercel deployment, optionally PIN-locked. Nobody else can see it.
@@ -47,17 +47,17 @@ Market Pulse has **no backend, no database, no user accounts**. There is no serv
 
 ## What it actually helps you decide
 
-The ETF monitor is not a chart you stare at. It is a **decision engine** — it reads the current market condition and tells you:
+The ETF monitor is not a chart you stare at. It is a **decision engine** - it reads the current market condition and tells you:
 
 | When NIFTY RSI is... | Market Pulse tells you to... |
 |---|---|
-| Below 30 (oversold) | Deploy cash in 3 tranches — 1/3 now, 1/3 lower, 1/3 lower still. Buy the most oversold ETF. |
+| Below 30 (oversold) | Deploy cash in 3 tranches - 1/3 now, 1/3 lower, 1/3 lower still. Buy the most oversold ETF. |
 | 30–45 (recovering) | Move funds from savings into your LiquidCase so you are ready. No buys yet. |
 | 45–70 (normal) | Hold. Let your ETFs compound. Park surplus in LiquidCase. |
 | 70–80 (extended) | Pause new lump sums. Sell OTM NIFTY calls at 5% OTM to collect premium while waiting. |
 | Above 80 (overbought) | Sell covered calls aggressively. Consider the Gain-Lock Collar to protect your gains. |
 
-It also checks your **actual portfolio gain percentage** against your cost basis. If you are sitting on 5%+ gains and the market is extended, it triggers the **Gain-Lock Rolling Collar** — a 3-leg options hedge that locks in your profits without selling a single ETF unit. It computes exact strike prices, lot sizes, and expiry dates so you know precisely what to execute.
+It also checks your **actual portfolio gain percentage** against your cost basis. If you are sitting on 5%+ gains and the market is extended, it triggers the **Gain-Lock Rolling Collar** - a 3-leg options hedge that locks in your profits without selling a single ETF unit. It computes exact strike prices, lot sizes, and expiry dates so you know precisely what to execute.
 
 No guessing. No FOMO. No panic selling. Just a clear signal every time you check.
 
@@ -66,23 +66,23 @@ No guessing. No FOMO. No panic selling. Just a clear signal every time you check
 ## Features
 
 ### ETF Portfolio Monitor
-- Dual-timeframe NIFTY RSI (2H + Daily) — catches real inflection points, not noise
+- Dual-timeframe NIFTY RSI (2H + Daily) - catches real inflection points, not noise
 - Five zones with exact action rules: BUY / WATCH / HOLD / CAUTION / HEDGE
-- **Gain-Lock Rolling Collar** — 3-leg hedge with computed strikes, lots, and expiry dates
-- LiquidCase tracker — always know how much deployable cash you have ready
+- **Gain-Lock Rolling Collar** - 3-leg hedge with computed strikes, lots, and expiry dates
+- LiquidCase tracker - always know how much deployable cash you have ready
 - Per-ETF RSI so you know which one to buy when you are in the BUY zone
-- PIN gate — lock your monitor when deployed publicly
+- PIN gate - lock your monitor when deployed publicly
 
 ### Strategy Backtester
 - **10 strategies** across momentum, mean reversion, volatility breakout, and regime-filtered approaches
 - Walk-forward engine with no look-ahead bias, ATR stops, 1:2 R:R, realistic slippage
-- Single stock or Portfolio mode — see combined equity curve, monthly P&L, win rate, max drawdown
+- Single stock or Portfolio mode - see combined equity curve, monthly P&L, win rate, max drawdown
 
 ### Paper Trading Flow
-- `/planner` — symbol + risk % = exact position size, entry, SL, target
-- `/positions` — track open trades
-- `/journal` — full closed trade log
-- `/analytics` — equity curve, win rate, monthly P&L over time
+- `/planner` - symbol + risk % = exact position size, entry, SL, target
+- `/positions` - track open trades
+- `/journal` - full closed trade log
+- `/analytics` - equity curve, win rate, monthly P&L over time
 
 ### Scanner
 - Scan multiple NSE symbols at once against any strategy
@@ -110,14 +110,14 @@ The app loads with demo holdings so you can explore every feature immediately. R
 
 The best way to get full value from Market Pulse is to run it against your actual holdings.
 
-### Option 1 — Local only (simplest)
+### Option 1 - Local only (simplest)
 
 1. Clone the repo
 2. Edit `data/holdings.json` with your real ETFs, quantities, and average costs
-3. Run `npm run dev` — your real portfolio is live locally
+3. Run `npm run dev` - your real portfolio is live locally
 4. Your holdings file never goes anywhere
 
-### Option 2 — Private fork + Vercel (recommended)
+### Option 2 - Private fork + Vercel (recommended)
 
 This gives you a live, always-on URL you can check from your phone anytime.
 
@@ -128,7 +128,7 @@ git clone https://github.com/YOUR_USERNAME/market-pulse.git
 cd market-pulse
 
 # 3. Add your holdings
-# Edit data/holdings.json — see format below
+# Edit data/holdings.json - see format below
 
 # 4. Set a PIN so only you can view your portfolio
 # (see PIN setup section below)
@@ -138,7 +138,7 @@ git add data/holdings.json
 git commit -m "add my portfolio"
 git push
 
-# 6. Deploy — connect your fork to Vercel
+# 6. Deploy - connect your fork to Vercel
 # vercel.com/new -> Import Git Repository -> select your fork
 ```
 
@@ -160,11 +160,11 @@ Your app is live at `your-project.vercel.app/etf-monitor`. PIN-locked so only yo
 }
 ```
 
-- `symbol` — use `TICKER.NS` format for NSE (Yahoo Finance convention)
-- `qty` — total units held (include any pledged shares)
-- `avgCost` — your average purchase price per unit
-- `liquidcaseAmount` — cash you have set aside and ready to deploy on a BUY signal
-- `updatedAt` — any date string, just for your reference
+- `symbol` - use `TICKER.NS` format for NSE (Yahoo Finance convention)
+- `qty` - total units held (include any pledged shares)
+- `avgCost` - your average purchase price per unit
+- `liquidcaseAmount` - cash you have set aside and ready to deploy on a BUY signal
+- `updatedAt` - any date string, just for your reference
 
 **Common NSE ETF symbols:** `NIFTYBEES.NS` `BANKBEES.NS` `ITBEES.NS` `MIDCAPIETF.NS` `SMALLCAP.NS` `MOM30IETF.NS` `MONIFTY500.NS` `LOWVOLIETF.NS`
 
@@ -175,10 +175,10 @@ Your app is live at `your-project.vercel.app/etf-monitor`. PIN-locked so only yo
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shamanthmps/market-pulse)
 
 1. Click the button
-2. Connect your GitHub account — Vercel forks the repo into your account automatically
+2. Connect your GitHub account - Vercel forks the repo into your account automatically
 3. Edit `data/holdings.json` in your new fork with your real data
 4. Set your PIN hash in Vercel environment variables (see below)
-5. Push — Vercel redeploys in ~60 seconds
+5. Push - Vercel redeploys in ~60 seconds
 
 ---
 
@@ -186,14 +186,14 @@ Your app is live at `your-project.vercel.app/etf-monitor`. PIN-locked so only yo
 
 Lock `/etf-monitor` behind a 4-digit PIN so only you can view your portfolio when deployed.
 
-**Step 1 — Generate your hash** (run in browser console):
+**Step 1 - Generate your hash** (run in browser console):
 
 ```js
 crypto.subtle.digest("SHA-256", new TextEncoder().encode("YOUR_PIN"))
   .then(b => console.log(Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, "0")).join("")))
 ```
 
-**Step 2 — Set it in Vercel:**
+**Step 2 - Set it in Vercel:**
 Dashboard > Your Project > Settings > Environment Variables
 
 ```
@@ -267,9 +267,9 @@ public/
 
 ## Limitations
 
-- **Paper trading only.** No broker API — this is a research and planning tool.
+- **Paper trading only.** No broker API - this is a research and planning tool.
 - **Yahoo Finance data.** Free tier can rate-limit on large scans (10+ symbols simultaneously).
-- **2H candles are resampled** from 1H data — Yahoo Finance does not natively support 2H intervals.
+- **2H candles are resampled** from 1H data - Yahoo Finance does not natively support 2H intervals.
 - **Indian markets only.** NSE/BSE symbols tested. International symbols not verified.
 - **Backtests are not guarantees.** Historical results do not predict future performance.
 
@@ -295,9 +295,9 @@ MIT
 
 ## Built by
 
-**Shamanth Kumar M** — Staff Technical Program Manager with 14+ years in engineering delivery. I build systems that replace manual work: sprint trackers, DevOps pipelines, delivery health dashboards, and now algo trading tools.
+**Shamanth Kumar M** - Staff Technical Program Manager with 14+ years in engineering delivery. I build systems that replace manual work: sprint trackers, DevOps pipelines, delivery health dashboards, and now algo trading tools.
 
-Market Pulse is something I built for myself — to stop guessing when to invest, when to hold, and when to protect gains. I'm sharing it because I think more people should have a system like this.
+Market Pulse is something I built for myself - to stop guessing when to invest, when to hold, and when to protect gains. I'm sharing it because I think more people should have a system like this.
 
 [![Website](https://img.shields.io/badge/Website-shamanthkm.vercel.app-black?logo=vercel)](https://shamanthkm.vercel.app/)
 [![GitHub](https://img.shields.io/badge/GitHub-shamanthmps-181717?logo=github)](https://github.com/shamanthmps)
