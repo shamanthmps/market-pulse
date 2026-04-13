@@ -24,6 +24,8 @@ Market Pulse is a self-hosted algo trading research platform built for Indian eq
 
 You tell it what ETFs you hold and at what price. It watches NIFTY RSI across two timeframes and tells you exactly what to do - when to deploy more capital, when to sit on your hands, when to sell covered calls, and when to lock in profits with a hedge collar. All of that, live, every time you open the app.
 
+> **Not just ETFs.** The portfolio monitor works with any NSE-listed instrument - equities, index ETFs, sector ETFs, mutual fund NAV proxies (use the underlying index symbol), or any basket of stocks you track. If Yahoo Finance has the ticker, it works here.
+
 Beyond the portfolio monitor, it lets you backtest 10 strategies on any NSE stock, paper trade with proper position sizing, and track your trading performance over time.
 
 **No API key. No paid data feed. No broker account needed.**
