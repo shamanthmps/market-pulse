@@ -29,7 +29,10 @@ export default function PinGate({ children }: { children: React.ReactNode }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    if (!PIN_HASH) { setUnlocked(true); return; }
+    if (!PIN_HASH) {
+      setUnlocked(true);
+      return;
+    }
     setUnlocked(localStorage.getItem(STORAGE_KEY) === "1");
   }, []);
 
