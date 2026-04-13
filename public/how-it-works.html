@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Pulse — How It Works</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 48px 24px 40px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px; height: 64px;
+    background: #4f46e5;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(79,70,229,0.5);
+  }
+  .logo svg { width: 32px; height: 32px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .hero h1 { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+  .hero p { margin-top: 10px; color: #94a3b8; font-size: 1rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+  .quote {
+    background: rgba(79,70,229,0.12);
+    border-left: 3px solid #6366f1;
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 32px auto;
+    max-width: 560px;
+    font-style: italic;
+    color: #a5b4fc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+  .quote span { display: block; margin-top: 6px; font-style: normal; font-size: 0.8rem; color: #64748b; }
+
+  /* ── Section ── */
+  .section { margin-top: 56px; }
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #4f46e5;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+  }
+  .section-sub { color: #64748b; font-size: 0.9rem; line-height: 1.6; }
+
+  /* ── What it does cards ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 22px 20px;
+  }
+  .card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    font-size: 1.25rem;
+  }
+  .card h3 { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+  .card p  { font-size: 0.82rem; color: #64748b; line-height: 1.55; }
+
+  /* ── Flow diagram ── */
+  .flow { margin-top: 28px; display: flex; flex-direction: column; gap: 0; }
+  .flow-row { display: flex; align-items: center; gap: 0; }
+  .flow-box {
+    flex: 1;
+    background: #1e293b;
+    border: 1.5px solid #334155;
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+  }
+  .flow-box.highlight { border-color: #4f46e5; background: rgba(79,70,229,0.1); }
+  .flow-box .tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    color: #64748b;
+  }
+  .flow-box.highlight .tag { color: #818cf8; }
+  .flow-box h4 { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+  .flow-box p  { font-size: 0.8rem; color: #64748b; line-height: 1.5; }
+
+  .arrow {
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px 6px;
+    color: #334155;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .flow-down { display: flex; justify-content: center; padding: 6px 0; color: #334155; font-size: 1.2rem; }
+
+  /* ── RSI explainer ── */
+  .rsi-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .rsi-box {
+    flex: 1; min-width: 150px;
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-align: center;
+  }
+  .rsi-box .number { font-size: 1.8rem; font-weight: 900; margin-bottom: 4px; }
+  .rsi-box .label  { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .rsi-box .desc   { font-size: 0.78rem; line-height: 1.4; }
+  .rsi-buy     { background: rgba(16,185,129,0.12); border: 1.5px solid rgba(16,185,129,0.3); }
+  .rsi-buy     .number { color: #34d399; }
+  .rsi-buy     .label  { color: #34d399; }
+  .rsi-buy     .desc   { color: #6ee7b7; }
+  .rsi-hold    { background: rgba(99,102,241,0.1); border: 1.5px solid rgba(99,102,241,0.25); }
+  .rsi-hold    .number { color: #818cf8; }
+  .rsi-hold    .label  { color: #818cf8; }
+  .rsi-hold    .desc   { color: #a5b4fc; }
+  .rsi-caution { background: rgba(245,158,11,0.1); border: 1.5px solid rgba(245,158,11,0.3); }
+  .rsi-caution .number { color: #fbbf24; }
+  .rsi-caution .label  { color: #fbbf24; }
+  .rsi-caution .desc   { color: #fde68a; }
+  .rsi-hedge   { background: rgba(239,68,68,0.1); border: 1.5px solid rgba(239,68,68,0.3); }
+  .rsi-hedge   .number { color: #f87171; }
+  .rsi-hedge   .label  { color: #f87171; }
+  .rsi-hedge   .desc   { color: #fca5a5; }
+
+  /* ── Tech stack ── */
+  .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 24px; }
+  .tech-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .tech-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .tech-card h4 { font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 3px; }
+  .tech-card p  { font-size: 0.78rem; color: #64748b; line-height: 1.5; }
+
+  /* ── Candle explain ── */
+  .candle-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  .candle-box {
+    flex: 1; min-width: 180px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .candle-box .badge {
+    display: inline-block;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .badge-2h    { background: rgba(99,102,241,0.2); color: #818cf8; }
+  .badge-daily { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .candle-box h4 { font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 5px; }
+  .candle-box p  { font-size: 0.8rem; color: #64748b; line-height: 1.55; }
+  .candle-box .step { font-size: 0.75rem; color: #475569; margin-top: 10px; line-height: 1.5; }
+
+  .divider { border: none; border-top: 1px solid #1e293b; margin: 56px 0 0; }
+
+  .footer { text-align: center; margin-top: 40px; color: #334155; font-size: 0.8rem; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.5rem; }
+    .flow-row { flex-direction: column; }
+    .arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    </div>
+    <h1>Market Pulse</h1>
+    <p>A personal investing tool that tells you when to buy, when to hold, and when the market is overheated — using live NIFTY data and a momentum signal called RSI.</p>
+
+    <div class="quote">
+      "Be fearful when others are greedy, and greedy when others are fearful."
+      <span>— Warren Buffett</span>
+    </div>
+  </div>
+
+  <!-- What it does -->
+  <div class="section">
+    <div class="section-label">What It Does</div>
+    <div class="section-title">One screen. Three decisions.</div>
+    <p class="section-sub">No spreadsheets. No guessing. Just a clear signal based on where the market momentum actually is.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon" style="background:rgba(16,185,129,0.15)">📉</div>
+        <h3>Market is oversold</h3>
+        <p>Everyone is scared. This is historically the best time to invest. App says BUY and tells you exactly how much to deploy.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background:rgba(99,102,241,0.15)">⏸️</div>
+        <h3>Market is neutral</h3>
+        <p>No clear signal either way. App says HOLD. Park your surplus in LiquidCase and wait. Do nothing is often the right call.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background:rgba(239,68,68,0.15)">📈</div>
+        <h3>Market is overbought</h3>
+        <p>Market is running hot. App says CAUTION. Stop buying. Optionally earn income by selling a call option while you wait.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSI Zones -->
+  <div class="section">
+    <div class="section-label">The Signal — RSI Zones</div>
+    <div class="section-title">RSI goes from 0 to 100. Here's what it means.</div>
+    <p class="section-sub">RSI (Relative Strength Index) measures momentum — how fast and how far prices are moving. It doesn't predict the future but it tells you when the market is stretched too far in either direction.</p>
+    <div class="rsi-row">
+      <div class="rsi-box rsi-buy">
+        <div class="number">&lt;30</div>
+        <div class="label">BUY Zone</div>
+        <div class="desc">Market beaten down. History says this is where long-term wealth is made.</div>
+      </div>
+      <div class="rsi-box rsi-hold">
+        <div class="number">30–70</div>
+        <div class="label">HOLD Zone</div>
+        <div class="desc">Normal range. Keep existing positions. No new lump-sum buys.</div>
+      </div>
+      <div class="rsi-box rsi-caution">
+        <div class="number">70–80</div>
+        <div class="label">CAUTION</div>
+        <div class="desc">Market extended. Pause buying. Optionally sell a call option for income.</div>
+      </div>
+      <div class="rsi-box rsi-hedge">
+        <div class="number">&gt;80</div>
+        <div class="label">HEDGE</div>
+        <div class="desc">Overheated. Stop all new buys. Income strategy — sell calls aggressively.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candle explain -->
+  <div class="section">
+    <div class="section-label">Two Timeframes — Double Confirmation</div>
+    <div class="section-title">We check the signal twice before acting.</div>
+    <p class="section-sub">One RSI alone can give false signals. Using two timeframes together filters out noise and gives higher confidence before recommending an action.</p>
+    <div class="candle-row">
+      <div class="candle-box">
+        <div class="badge badge-2h">2-Hour RSI</div>
+        <h4>Short-term momentum</h4>
+        <p>NIFTY price data is fetched every 1 hour from Yahoo Finance. Two 1-hour bars are combined into one 2-hour bar. RSI is then computed on these 2H bars.</p>
+        <p class="step">Purpose: Catch intraday/short-term extremes — when market has moved too fast in a few sessions.</p>
+      </div>
+      <div class="candle-box">
+        <div class="badge badge-daily">Daily RSI</div>
+        <h4>Trend confirmation</h4>
+        <p>Separately, the daily closing prices of NIFTY are fetched. RSI is computed on the full daily chart — one bar per trading day.</p>
+        <p class="step">Purpose: Confirm the bigger trend. A 2H spike alone is noise. If Daily RSI also agrees, the signal is real.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture Flow -->
+  <div class="section">
+    <div class="section-label">How It's Connected</div>
+    <div class="section-title">Data flows in one direction — from market to you.</div>
+    <p class="section-sub">Nothing is stored on a server. Your portfolio stays in your browser. The app only reads data — it never writes or transacts anything.</p>
+
+    <div class="flow" style="margin-top:28px">
+
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:#0ea5e9; background:rgba(14,165,233,0.07)">
+          <div class="tag">Live Data Source</div>
+          <h4>Yahoo Finance</h4>
+          <p>Free public API. No subscription. Provides NIFTY 1H candles (for 2H RSI) and NIFTY daily candles. Also provides live ETF prices for your holdings.</p>
+        </div>
+      </div>
+
+      <div class="flow-down">↓</div>
+
+      <div class="flow-row">
+        <div class="flow-box highlight">
+          <div class="tag">Signal Engine (Server-side)</div>
+          <h4>API Route — RSI Calculator</h4>
+          <p>Fetches raw candles, resamples 1H → 2H, computes RSI for both timeframes, applies zone thresholds, and generates the BUY / HOLD / CAUTION / SELL verdict. Runs fresh on every Refresh.</p>
+        </div>
+      </div>
+
+      <div class="flow-down">↓</div>
+
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:#10b981; background:rgba(16,185,129,0.07)">
+          <div class="tag">Your Screen</div>
+          <h4>ETF Monitor UI</h4>
+          <p>Shows the Market Pulse signal, both RSI gauges, your portfolio P&amp;L, each ETF's individual RSI, the deploy sizing guide, and the hedge calculator — all in one view.</p>
+        </div>
+      </div>
+
+      <div class="flow-down">↓</div>
+
+      <div class="flow-row">
+        <div class="flow-box" style="border-color:#475569; background:rgba(71,85,105,0.1)">
+          <div class="tag">Stays in Your Browser</div>
+          <h4>Your Portfolio Data</h4>
+          <p>ETF holdings (symbols, qty, avg cost), LiquidCase amount, and PIN unlock state are all stored in your browser's localStorage. Never sent to any server. Never stored in a database.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <div class="section-label">Technology Used</div>
+    <div class="section-title">Modern tools, built fast with AI.</div>
+    <p class="section-sub">Every block was described in plain English to an AI coding tool. The AI wrote the code. The whole thing was running in under an hour.</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(99,102,241,0.15); font-size:1.3rem">⚡</div>
+        <div>
+          <h4>Next.js</h4>
+          <p>The web framework — handles the UI, the API route, and server-side logic all in one project.</p>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(14,165,233,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <div>
+          <h4>Vercel</h4>
+          <p>Free cloud hosting. Deploys instantly when code is pushed. Makes the app live worldwide.</p>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(16,185,129,0.15); font-size:1.2rem">📊</div>
+        <div>
+          <h4>Yahoo Finance API</h4>
+          <p>Free public data feed. No API key needed. Provides all NIFTY and ETF price data in real time.</p>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(245,158,11,0.15); font-size:1.2rem">🧮</div>
+        <div>
+          <h4>Custom RSI Engine</h4>
+          <p>Written in TypeScript. Resamples candles, computes RSI, applies dual-timeframe thresholds, generates verdicts.</p>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(239,68,68,0.15); font-size:1.2rem">🔒</div>
+        <div>
+          <h4>Browser localStorage</h4>
+          <p>Your portfolio data and PIN state live only in your browser. Nothing sent to any external server.</p>
+        </div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon" style="background:rgba(139,92,246,0.15); font-size:1.2rem">🤖</div>
+        <div>
+          <h4>Cursor (AI Coding)</h4>
+          <p>The entire app was built by describing requirements in plain English. AI wrote the code. No manual coding.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+  <div class="footer">Market Pulse · Built with AI · Data from Yahoo Finance · Deployed on Vercel</div>
+
+</div>
+</body>
+</html>

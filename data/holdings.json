@@ -1,0 +1,11 @@
+{
+  "etfHoldings": [
+    { "symbol": "NIFTYBEES.NS",  "displayName": "Nifty BeES",       "qty": 100,  "avgCost": 250.00 },
+    { "symbol": "BANKBEES.NS",   "displayName": "Bank BeES",        "qty": 50,   "avgCost": 520.00 },
+    { "symbol": "MIDCAPIETF.NS", "displayName": "Midcap ETF",       "qty": 200,  "avgCost": 22.00  },
+    { "symbol": "SMALLCAP.NS",   "displayName": "Smallcap ETF",     "qty": 150,  "avgCost": 46.00  },
+    { "symbol": "MOM30IETF.NS",  "displayName": "Momentum 30 ETF",  "qty": 100,  "avgCost": 31.00  }
+  ],
+  "liquidcaseAmount": 25000,
+  "updatedAt": "2026-04-13"
+}
