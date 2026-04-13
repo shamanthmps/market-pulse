@@ -199,8 +199,8 @@ export default function AppleIcon() {
           lineHeight: 1,
         }}
       >
-        <span style={{ color: "#a5b4fc" }}>S</span>
-        <span style={{ color: "#34d399" }}>IQ</span>
+        <span style={{ color: "#a5b4fc" }}>M</span>
+        <span style={{ color: "#34d399" }}>P</span>
       </div>
     </div>,
     { ...size },
